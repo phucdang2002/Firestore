@@ -12,14 +12,14 @@ import { notesCollection } from "../firebaseConfig";
 
 const COLORS = ["#C8E6C9", "#BBDEFB", "#FFCDD2", "#FFF9C4", "#B2EBF2", "#E1BEE7"];
 
-const NotesScreen = () => {
+const NotesScreen = ({navigation}) => {
     const [notes, setNotes] = useState([]);
-    const [newNote, setNewNote] = useState("");
 
     useEffect(() => {
         const unsubscribe = notesCollection.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
             const notesList = snapshot.docs.map((doc, index) => ({
                 id: doc.id,
+                title: doc.data().title,
                 content: doc.data().content,
                 color: COLORS[index % COLORS.length], // Assign color
             }));
@@ -28,14 +28,6 @@ const NotesScreen = () => {
         return () => unsubscribe();
     }, []);
 
-    const addNote = async () => {
-        if (newNote.trim() === "") return;
-        await notesCollection.add({
-            content: newNote,
-            createdAt: new Date(),
-        });
-        setNewNote("");
-    };
 
     const deleteNote = async (id) => {
         await notesCollection.doc(id).delete();
@@ -43,31 +35,25 @@ const NotesScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TextInput
-                value={newNote}
-                onChangeText={setNewNote}
-                placeholder="Enter a note"
-                style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
-            />
-            <Button title="Save Note" onPress={addNote} />
             <Text style={styles.header}>Recent Notes</Text>
 
             <FlatList
                 data={notes}
                 keyExtractor={(item) => item.id}
-                numColumns={2} // Grid layout
+                numColumns={2} 
                 contentContainerStyle={styles.notesList}
                 renderItem={({ item }) => (
                     <TouchableOpacity 
                         style={[styles.noteCard, { backgroundColor: item.color }]}
                         onPress={() => deleteNote(item.id)}
                     >
+                        <Text style={styles.noteTitle}>{item.title}</Text>
                         <Text style={styles.noteText}>{item.content}</Text>
                     </TouchableOpacity>
                 )}
             />
 
-            <TouchableOpacity style={styles.fab} onPress={addNote}>
+            <TouchableOpacity style={styles.fab} onPress={()=>navigation.navigate("CreateNote")}>
                 <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
             </TouchableOpacity> 
         </View>
@@ -90,7 +76,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     notesList: {
-        paddingBottom: 80, // Avoid overlap with FAB
+        paddingBottom: 80,
     },
     noteCard: {
         flex: 1,
@@ -104,6 +90,11 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
+    },
+    noteTitle: {
+        fontSize: 18,
+        fontWeight: "500",
+        color: "#333",
     },
     noteText: {
         fontSize: 16,

@@ -9,7 +9,7 @@ import {
 import { notesCollection } from "../firebaseConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateNote = () => {
+const CreateNote = ({navigation}) => {
   const { noteId } = {};
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -60,7 +60,7 @@ const CreateNote = () => {
         <Text style={styles.screenTitle}>
           {noteId ? "Edit Note" : "Create Note"}
         </Text>
-        <TouchableOpacity onPress={saveNote}>
+        <TouchableOpacity onPress={()=>saveNote()}>
           <Ionicons name="checkmark" size={24} color="#333" />
         </TouchableOpacity>
       </View>
@@ -72,14 +72,14 @@ const CreateNote = () => {
           placeholder="Note Title"
           placeholderTextColor="#aaa"
           value={title}
-          onChangeText={(text) => setTitle(text)}
+          onChangeText={setTitle}
         />
         <TextInput
           style={styles.bodyInput}
           placeholder="Note Content"
           placeholderTextColor="#aaa"
           value={content}
-          onChangeText={(text) => setContent(text)}
+          onChangeText={setContent}
           multiline
         />
       </View>
