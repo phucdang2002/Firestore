@@ -3,14 +3,27 @@ import CreateNote from "./src/CreateNote";
 import NotesScreen from "./src/NotesScreen";
 import 'react-native-gesture-handler';
 import { createStackNavigator } from "@react-navigation/stack";
+import { Alert, PermissionsAndroid } from "react-native";
+import { useEffect } from "react";
+import { getFCMToken } from "./firebaseConfig";
+import messaging from "@react-native-firebase/messaging";
 
+PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 const Stack = createStackNavigator();
 function App(): React.JSX.Element {
+  useEffect(() => {
+    getFCMToken();
+    // Lắng nghe khi nhận thông báo
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      Alert.alert("New Notification: " + remoteMessage.notification?.body);
+    });
+    return unsubscribe;
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Notes" component={NotesScreen} options={{headerShown: false}}/>
-        <Stack.Screen name="CreateNote" component={CreateNote} options={{headerShown: false}}/>
+        <Stack.Screen name="Notes" component={NotesScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CreateNote" component={CreateNote} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

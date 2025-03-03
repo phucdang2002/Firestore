@@ -6,17 +6,16 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { notesCollection } from "../firebaseConfig";
+import { getFCMToken, notesCollection } from "../firebaseConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateNote = ({navigation}) => {
+const CreateNote = ({ navigation }) => {
   const { noteId } = {};
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   useEffect(() => {
     if (noteId) {
-      // If editing, fetch the existing note
       const unsubscribe = notesCollection.doc(noteId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
@@ -30,23 +29,30 @@ const CreateNote = ({navigation}) => {
 
   const saveNote = async () => {
     if (!title.trim() && !content.trim()) {
-      // If both title and content are empty, do nothing or handle accordingly
       return;
     }
 
     if (noteId) {
-      // Update existing note
       await notesCollection.doc(noteId).update({
         title,
         content,
       });
     } else {
-      // Create a new note
       await notesCollection.add({
         title,
         content,
         createdAt: new Date(),
       });
+      const token = await getFCMToken();
+      console.log(token);
+
+      await fetch("http://192.168.1.5:8080/send-notification", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token: token, message: "A new note has been added!" }),
+      }).then((res) => console.log(res));
     }
     navigation.goBack();
   };
@@ -60,12 +66,11 @@ const CreateNote = ({navigation}) => {
         <Text style={styles.screenTitle}>
           {noteId ? "Edit Note" : "Create Note"}
         </Text>
-        <TouchableOpacity onPress={()=>saveNote()}>
+        <TouchableOpacity onPress={() => saveNote()}>
           <Ionicons name="checkmark" size={24} color="#333" />
         </TouchableOpacity>
       </View>
 
-      {/* Main Content */}
       <View style={styles.contentContainer}>
         <TextInput
           style={styles.titleInput}
@@ -92,7 +97,7 @@ export default CreateNote;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFDE7", // Light, soft background
+    backgroundColor: "#FFFDE7",
   },
   topBar: {
     flexDirection: "row",
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
     borderRadius: 8,
-    backgroundColor: "#FFF9C4", // Subtle highlight for title input
+    backgroundColor: "#FFF9C4",
     paddingHorizontal: 12,
     paddingVertical: 8,
     color: "#333",

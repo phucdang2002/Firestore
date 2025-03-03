@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { 
     FlatList, 
     Text, 
-    TextInput, 
     TouchableOpacity, 
     View, 
     StyleSheet, 
-    Button
 } from "react-native";
 import { notesCollection } from "../firebaseConfig";
 
@@ -21,7 +19,7 @@ const NotesScreen = ({navigation}) => {
                 id: doc.id,
                 title: doc.data().title,
                 content: doc.data().content,
-                color: COLORS[index % COLORS.length], // Assign color
+                color: COLORS[index % COLORS.length], 
             }));
             setNotes(notesList);
         });
