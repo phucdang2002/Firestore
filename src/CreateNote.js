@@ -31,7 +31,6 @@ const CreateNote = ({ navigation }) => {
     if (!title.trim() && !content.trim()) {
       return;
     }
-
     if (noteId) {
       await notesCollection.doc(noteId).update({
         title,
@@ -44,15 +43,14 @@ const CreateNote = ({ navigation }) => {
         createdAt: new Date(),
       });
       const token = await getFCMToken();
-      console.log(token);
 
-      await fetch("http://192.168.1.5:8080/send-notification", {
+      await fetch("http://localhost:8080/send-notification", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ token: token, message: "A new note has been added!" }),
-      }).then((res) => console.log(res));
+      })
     }
     navigation.goBack();
   };
