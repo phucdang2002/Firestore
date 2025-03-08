@@ -12,7 +12,20 @@
           "package_name": "com.firestore"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1021956021490-5ef7hf149mgv0brhp3nf6g5456spvpu4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firestore",
+            "certificate_hash": "187a531fa3fd1da0915a102448abd5bc2ddfcd31"
+          }
+        },
+        {
+          "client_id": "1021956021490-j5ncut9veo6pitsmkig1fa5f1i952ft5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBapa2yC4hxHwHjFMoyzneMM_rSO9uR-dc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1021956021490-j5ncut9veo6pitsmkig1fa5f1i952ft5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

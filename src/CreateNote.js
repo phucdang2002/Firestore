@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { getFCMToken, notesCollection } from "../firebaseConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import auth from "@react-native-firebase/auth";
 
-const CreateNote = ({ navigation }) => {
+const CreateNote = ({ navigation, route }) => {
   const { noteId } = {};
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -26,7 +27,7 @@ const CreateNote = ({ navigation }) => {
       return () => unsubscribe();
     }
   }, [noteId]);
-
+  
   const saveNote = async () => {
     if (!title.trim() && !content.trim()) {
       return;
@@ -38,13 +39,14 @@ const CreateNote = ({ navigation }) => {
       });
     } else {
       await notesCollection.add({
+        uid: auth().currentUser.uid,
         title,
         content,
         createdAt: new Date(),
       });
       const token = await getFCMToken();
 
-      await fetch("http://localhost:8080/send-notification", {
+      await fetch("http://192.168.1.3:8080/send-notification", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json"

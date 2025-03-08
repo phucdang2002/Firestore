@@ -7,7 +7,9 @@ import { Alert, PermissionsAndroid } from "react-native";
 import { useEffect } from "react";
 import { getFCMToken } from "./firebaseConfig";
 import messaging from "@react-native-firebase/messaging";
-
+import Login from "./src/Login";
+import Register from "./src/Register";
+import auth from "@react-native-firebase/auth";
 PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 const Stack = createStackNavigator();
 function App(): React.JSX.Element {
@@ -21,7 +23,9 @@ function App(): React.JSX.Element {
   }, []);
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName={auth().currentUser ? "Notes" : "Login"}>
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Notes" component={NotesScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CreateNote" component={CreateNote} options={{ headerShown: false }} />
       </Stack.Navigator>

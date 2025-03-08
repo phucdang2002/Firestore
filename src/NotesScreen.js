@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { 
-    FlatList, 
-    Text, 
-    TouchableOpacity, 
-    View, 
-    StyleSheet, 
-} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import auth from "@react-native-firebase/auth";
+import { FlatList, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { notesCollection } from "../firebaseConfig";
 
 const COLORS = ["#C8E6C9", "#BBDEFB", "#FFCDD2", "#FFF9C4", "#B2EBF2", "#E1BEE7"];
 
-const NotesScreen = ({navigation}) => {
+const NotesScreen = ({ navigation }) => {
     const [notes, setNotes] = useState([]);
-
     useEffect(() => {
-        const unsubscribe = notesCollection.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-            const notesList = snapshot.docs.map((doc, index) => ({
-                id: doc.id,
-                title: doc.data().title,
-                content: doc.data().content,
-                color: COLORS[index % COLORS.length], 
-            }));
-            setNotes(notesList);
-        });
+        const unsubscribe = notesCollection
+            .where("uid", "==", auth().currentUser.uid)
+            .orderBy("createdAt", "desc").onSnapshot(async (snapshot) => {
+                const notesList = snapshot.docs.map((doc, index) => ({
+                    id: doc.id,
+                    title: doc.data().title,
+                    content: doc.data().content,
+                    color: COLORS[index % COLORS.length],
+                }));
+                setNotes(notesList);
+            });
         return () => unsubscribe();
     }, []);
 
@@ -30,18 +27,20 @@ const NotesScreen = ({navigation}) => {
     const deleteNote = async (id) => {
         await notesCollection.doc(id).delete();
     };
-
+    const handleLogout = () => {
+        auth().signOut().then(() => navigation.navigate("Login")).catch((error) => console.log(error));
+    }
     return (
         <View style={styles.container}>
+            <Icon name="logout" size={24} onPress={handleLogout} />
             <Text style={styles.header}>Recent Notes</Text>
-
             <FlatList
                 data={notes}
                 keyExtractor={(item) => item.id}
-                numColumns={2} 
+                numColumns={2}
                 contentContainerStyle={styles.notesList}
                 renderItem={({ item }) => (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.noteCard, { backgroundColor: item.color }]}
                         onPress={() => deleteNote(item.id)}
                     >
@@ -51,9 +50,9 @@ const NotesScreen = ({navigation}) => {
                 )}
             />
 
-            <TouchableOpacity style={styles.fab} onPress={()=>navigation.navigate("CreateNote")}>
+            <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate("CreateNote")}>
                 <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
-            </TouchableOpacity> 
+            </TouchableOpacity>
         </View>
     );
 };
