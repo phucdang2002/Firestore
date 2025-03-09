@@ -10,14 +10,16 @@ const NotesScreen = ({ navigation }) => {
     const [notes, setNotes] = useState([]);
     useEffect(() => {
         const unsubscribe = notesCollection
-            .where("uid", "==", auth().currentUser.uid)
-            .orderBy("createdAt", "desc").onSnapshot(async (snapshot) => {
-                const notesList = snapshot.docs.map((doc, index) => ({
-                    id: doc.id,
-                    title: doc.data().title,
-                    content: doc.data().content,
-                    color: COLORS[index % COLORS.length],
-                }));
+            .orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                const notesList = snapshot.docs
+                    .filter(doc => doc.data().uid === auth().currentUser.uid)
+                    .map((doc, index) => ({
+                        id: doc.id,
+                        title: doc.data().title,
+                        content: doc.data().content,
+                        uid: doc.data().uid,
+                        color: COLORS[index % COLORS.length],
+                    }));
                 setNotes(notesList);
             });
         return () => unsubscribe();
