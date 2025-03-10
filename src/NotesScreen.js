@@ -3,6 +3,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import auth from "@react-native-firebase/auth";
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { notesCollection } from "../firebaseConfig";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const COLORS = ["#C8E6C9", "#BBDEFB", "#FFCDD2", "#FFF9C4", "#B2EBF2", "#E1BEE7"];
 
@@ -24,12 +25,11 @@ const NotesScreen = ({ navigation }) => {
             });
         return () => unsubscribe();
     }, []);
-
-
     const deleteNote = async (id) => {
         await notesCollection.doc(id).delete();
     };
     const handleLogout = () => {
+        GoogleSignin.signOut();
         auth().signOut().then(() => navigation.navigate("Login")).catch((error) => console.log(error));
     }
     return (

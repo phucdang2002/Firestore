@@ -6,9 +6,8 @@ const Register = ({navigation}) => {
     const [password, setPassword] = useState("");
     const handleSignUp = () => {
         auth().createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user);
+            .then(() => {
+                navigation.navigate('Notes');
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {

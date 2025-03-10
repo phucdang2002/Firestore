@@ -45,7 +45,8 @@ const CreateNote = ({ navigation, route }) => {
         createdAt: new Date(),
       });
       const token = await getFCMToken();
-
+      console.log(token);
+      
       await fetch("http://192.168.1.3:8080/send-notification", {
         method: "POST",
         headers: { 
